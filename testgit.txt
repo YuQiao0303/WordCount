@@ -1,1 +1,2 @@
 This file is only used to practice using git .
+I'm kind of confused my friend.
