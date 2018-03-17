@@ -12,6 +12,28 @@ import java.io.IOException;
 
 public class WC 
 {
+	//////////////////////////attributes
+	public static String inputFile;    //要统计的文件名
+	public static String outputFile;   //输出信息的文件名
+	public static String stopList;     //
+
+	
+	public static int chars;
+	public static int words;
+	public static int lines;
+	public static int codeLines;
+	public static int empLines;
+	public static int comLines;
+
+	public static boolean needC;
+	public static boolean needW;
+	public static boolean needL;
+	public static boolean needO;
+
+	public static boolean needS;
+	public static boolean needA;
+	public static boolean needE;
+
 	//得到指定路径文件夹中所有文件名（不含路径，含后缀）
 	public static String [] getFileName(String path) 
     { 
@@ -36,26 +58,31 @@ public class WC
         } 
     }
     
-    //返回指定文件的总行数
-    public static int getLineNum(String pathname)
+    //返回指定文件的数据
+    public static void getInfo()
     {
-    	int lineNum=0;
+    	chars=0;
+    	words=0;
+    	lines=0;
+    	codeLines=0;
+    	empLines=0;
+    	comLines=0;
     	try 
 		{ // 防止文件建立或读取失败，用catch捕捉错误并打印，也可以throw  
-    		 
-    		File filename = new File(pathname); // 要读取以上路径的文件  
+    		File filename = new File(inputFile); // 要读取该路径的文件  
             InputStreamReader reader = new InputStreamReader(  
                     new FileInputStream(filename)); // 建立一个输入流对象reader  
             BufferedReader br = new BufferedReader(reader); // 建立一个对象，它把文件内容转成计算机能读懂的语言  
             String line ;  
             line = br.readLine();  
-            //System.out.println(line);
             while (line != null) 
             {  
+            	chars+=line.length();
+            	lines++;
                 line = br.readLine(); // 一次读入一行数据  
-                //if(line==null)
-                	//break;
-                lineNum++;
+//                if(line==null)
+//                	break;
+//                lines++;
             } 
             br.close();
 		}
@@ -63,44 +90,15 @@ public class WC
 		{
 			e.printStackTrace();
 		} 
-    	return lineNum;
+    	
     }
-  //返回文件的总字符数（空格也算字符）
-    public static int getCharNum(String pathname)
-    {
-    	int charNum=0;
-    	try 
-		{ // 防止文件建立或读取失败，用catch捕捉错误并打印，也可以throw  
-    		 
-    		File filename = new File(pathname); // 要读取以上路径的文件  
-            InputStreamReader reader = new InputStreamReader(  
-                    new FileInputStream(filename)); // 建立一个输入流对象reader  
-            BufferedReader br = new BufferedReader(reader); // 建立一个对象，它把文件内容转成计算机能读懂的语言  
-            String line ;  
-            line = br.readLine();  
-            charNum+=line.length();
-            //System.out.println(line);
-            while (line != null) 
-            {  
-                line = br.readLine(); // 一次读入一行数据  
-                if(line==null)
-                	break;
-                charNum+=line.length();
-            } 
-            br.close();
-		}
-		catch (IOException e) 
-		{
-			e.printStackTrace();
-		} 
-    	return charNum;
-    }
+
 
 	//主方法
 	public static void main(String[] args)
 	{
-		int lines=getLineNum("file1.c");
-		int chars=getCharNum("file1.c");
+		inputFile="file1.c";
+		getInfo();
 		System.out.print("lines: ");
 		System.out.println(lines);
 		System.out.print("characters: ");
