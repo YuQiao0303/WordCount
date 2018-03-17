@@ -65,7 +65,7 @@ public class WC
 		} 
     	return lineNum;
     }
-    //返回文件的总字符数（空格也算字符）
+  //返回文件的总字符数（空格也算字符）
     public static int getCharNum(String pathname)
     {
     	int charNum=0;
@@ -78,13 +78,14 @@ public class WC
             BufferedReader br = new BufferedReader(reader); // 建立一个对象，它把文件内容转成计算机能读懂的语言  
             String line ;  
             line = br.readLine();  
+            charNum+=line.length();
             //System.out.println(line);
             while (line != null) 
             {  
                 line = br.readLine(); // 一次读入一行数据  
-                //if(line==null)
-                	//break;
-                
+                if(line==null)
+                	break;
+                charNum+=line.length();
             } 
             br.close();
 		}
@@ -94,11 +95,16 @@ public class WC
 		} 
     	return charNum;
     }
+
 	//主方法
 	public static void main(String[] args)
 	{
 		int lines=getLineNum("file1.c");
+		int chars=getCharNum("file1.c");
+		System.out.print("lines: ");
 		System.out.println(lines);
+		System.out.print("characters: ");
+		System.out.println(chars);
 	}
 
 }
