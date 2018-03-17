@@ -61,12 +61,20 @@ public class WC
     //返回指定文件的数据
     public static void getInfo()
     {
+    	if(inputFile==null)
+    	{
+    		System.out.println("Error: inputFile==null !!");
+    		return;
+    	}
     	chars=0;
     	words=0;
     	lines=0;
     	codeLines=0;
     	empLines=0;
     	comLines=0;
+    	
+    	boolean partition=true;
+    	char charNow;
     	try 
 		{ // 防止文件建立或读取失败，用catch捕捉错误并打印，也可以throw  
     		File filename = new File(inputFile); // 要读取该路径的文件  
@@ -74,15 +82,35 @@ public class WC
                     new FileInputStream(filename)); // 建立一个输入流对象reader  
             BufferedReader br = new BufferedReader(reader); // 建立一个对象，它把文件内容转成计算机能读懂的语言  
             String line ;  
-            line = br.readLine();  
+            line = br.readLine(); 
+            
+            if (line.charAt(0)==' ')
+            	System.out.println("is a space!!");
+            
             while (line != null) 
             {  
+            	//统计行数和字符数
             	chars+=line.length();
             	lines++;
+            	//________________________统计单词_____________________________
+            	partition=true;
+            	
+            	for(int i=0;i<line.length();i++)
+            	{
+            		charNow=line.charAt(i);
+            		if(partition==true&&charNow!=' '&&charNow!='\t'&&charNow!=','&&charNow!='，')
+            			{
+            				words++;
+            				partition=false;
+            			}
+            		if(charNow==' '&&charNow=='\t'&&charNow==','&&charNow=='，')
+            		{
+            			partition=true;
+            		}
+            	}
+            	//-----------------------------------------------------------------
                 line = br.readLine(); // 一次读入一行数据  
-//                if(line==null)
-//                	break;
-//                lines++;
+
             } 
             br.close();
 		}
@@ -103,6 +131,8 @@ public class WC
 		System.out.println(lines);
 		System.out.print("characters: ");
 		System.out.println(chars);
+		System.out.print("words: ");
+		System.out.println(words);
 	}
 
 }
