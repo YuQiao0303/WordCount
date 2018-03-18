@@ -7,3 +7,4 @@
 awewef
 */
 }
+F://my*.c
