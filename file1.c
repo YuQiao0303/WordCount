@@ -1,8 +1,13 @@
 {
 	{
-	//code
+	// code
 	code//afew
 	}
+main
+
+
+
+
 /*aegaawef
 awewef
 */

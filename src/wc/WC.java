@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.TreeMap;
 import java.io.BufferedReader;  
 import java.io.BufferedWriter;  
 import java.io.FileInputStream;  
@@ -65,7 +66,7 @@ public class WC
 	        } 
 	    }
 	 
-	//____________________________________s___________________________
+	//____________________________________s()___________________________
 	 
 	//递归得到    指定路径文件夹   及其子文件夹中   所有符合用户要求的文件名（含绝对路径，含后缀）
 	public static void s(ArrayList<String> fileNames)    //实现“-s”功能的函数
@@ -156,7 +157,120 @@ public class WC
 			e.printStackTrace();
 		}     	
     }
-    //_______________________________getComInfo____________________________
+    //________________________getStopList()__________________________
+    
+    //将停用词表中的单词让入数组wordsIgnored
+    public static void getStopList(ArrayList<String> wordsIgnored)
+    {
+    	
+		try 
+		{ // 防止文件建立或读取失败，用catch捕捉错误并打印，也可以throw  
+
+            /* 读入stopList */  
+            File filename = new File(stopList); // 要读取以上路径的input。txt文件  
+            InputStreamReader reader = new InputStreamReader(  
+                    new FileInputStream(filename)); // 建立一个输入流对象reader  
+            BufferedReader br = new BufferedReader(reader); // 建立一个对象，它把文件内容转成计算机能读懂的语言  
+            String line ;  
+            line = br.readLine();  
+            
+            String reg1 = "\\s+";                       
+            while (line != null) 
+            {  
+            	//将读取的行分割成各个单词 
+            	String str[] = line.split(reg1);
+            	
+            	for(int i=0;i<str.length;i++)
+            	{
+            		wordsIgnored.add(str[i]);  //将停用词表中的单词让入数组wordsIgnored
+            	}
+                line = br.readLine(); // 一次读入一行数据
+            } 
+            br.close();
+		}
+		catch (IOException e) 
+		{
+			e.printStackTrace();
+		} 
+
+    
+    }
+  //_______________getBasicInfoWithSL()返回指定文件FileName的数据(含停用词表）____________________
+    public static void getBasicInfoWithSL(String fileName)
+    {
+    	//_____________________变量声明____________________
+    	chars=0;
+    	words=0;
+    	lines=0;
+    	ArrayList<String> wordsIgnored = new ArrayList<String>();
+    	getStopList(wordsIgnored);
+    	///////////////////////////////////
+    	System.out.print("stoplist:");
+    	System.out.println(wordsIgnored);
+    	///////////////////////////////////////////
+    	//定义一个map集合保存stoplist中的单词
+    	TreeMap<String,Integer> tm = new TreeMap<String,Integer>(); 
+    	
+    	for(int i=0;i<wordsIgnored.size();i++)
+    	{
+    		String word=wordsIgnored.get(i);
+    		tm.put(word,1); /////////
+    	}
+    	try 
+		{ // 防止文件建立或读取失败，用catch捕捉错误并打印，也可以throw  
+    		File filename = new File(fileName); // 要读取该路径的文件  
+            InputStreamReader reader = new InputStreamReader(  
+                    new FileInputStream(filename)); // 建立一个输入流对象reader  
+            BufferedReader br = new BufferedReader(reader); // 建立一个对象，它把文件内容转成计算机能读懂的语言  
+            String line ;  
+            line = br.readLine(); 
+            while (line != null) 
+            {  
+            	//——————————————————————统计行数和字符数__________
+            	chars+=line.length();
+            	lines++;
+            	//_______________________打印该行行号和内容
+            	System.out.println(lines);
+//            	System.out.print("	");
+//            	System.out.print(line);
+            	
+            	//________________________统计单词_____________________________
+            	
+            	line.toLowerCase();
+            	String reg1 = "\\s+|,+";   //用空格、tab或逗号来分割单词 
+            	//String regEmp = "\\s+";
+            	//将读取的文本进行分割 
+            	String str[] = line.split(reg1); 
+            	
+            	for(String s: str)
+            	{ 
+            		if(!s.equals(""))
+            		{
+            			
+               	     //判断tm即stopList中中是否已经存在该单词，如果不存在则单词数加一；若存在则不变
+               			if(!tm.containsKey(s))   //tm中是否包含该单词
+               			{ 
+               				//System.out.println(s);
+               				words++;
+               			}
+            		}
+            		
+            	 } 
+            	
+            	//System.out.println(tm);
+            	//-----------------------------------------------------------------
+                line = br.readLine(); // 读取下一行数据  
+            } 
+            br.close();
+		}
+    	
+		catch (IOException e) 
+		{
+			e.printStackTrace();
+		}     	
+    }
+    
+    //_______________________________getComInfo()____________________________
     public static void getComInfo(String fileName)
     {
     	//_____________________变量声明____________________
@@ -248,9 +362,17 @@ public class WC
 	{
 		//递归地找到目录及子目录下所有符合条件的文件名
 		inputFile="file1.c";
+		stopList="stoplist.txt";
 		//ArrayList<String> fileFound=new ArrayList<String>();
 		//s(fileFound);
+		
+		
+		
+		//getBasicInfoWithSL(inputFile);
 		getBasicInfo(inputFile);
+		
+		
+		
 		getComInfo(inputFile);
 		//System.out.println(fileFound);
 		
