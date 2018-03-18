@@ -71,7 +71,7 @@ public class WC
 	//递归得到    指定路径文件夹   及其子文件夹中   所有符合用户要求的文件名（含绝对路径，含后缀）
 	public static void s(ArrayList<String> fileNames)    //实现“-s”功能的函数
 	{
-		System.out.println(inputFile);
+		//System.out.println(inputFile);//****************************
 		//inputFile="C:/Users/yuqiao/Documents/Visual Studio 2015/Projects/BookStore1/BookStore1/*.cpp";
 		String path;
 		String type=inputFile.substring((inputFile.lastIndexOf(".") + 1), inputFile.length()).toLowerCase();
@@ -205,8 +205,8 @@ public class WC
     	ArrayList<String> wordsIgnored = new ArrayList<String>();
     	getStopList(wordsIgnored);
     	///////////////////////////////////
-    	System.out.print("stoplist:");
-    	System.out.println(wordsIgnored);
+    	//System.out.print("stoplist:");
+    	//System.out.println(wordsIgnored);
     	///////////////////////////////////////////
     	//定义一个map集合保存stoplist中的单词
     	TreeMap<String,Integer> tm = new TreeMap<String,Integer>(); 
@@ -230,7 +230,7 @@ public class WC
             	chars+=line.length();
             	lines++;
             	//_______________________打印该行行号和内容
-            	System.out.println(lines);
+            	//System.out.println(lines);
 //            	System.out.print("	");
 //            	System.out.print(line);
             	
@@ -317,27 +317,27 @@ public class WC
             			{
             				commentingNow=true;
             				
-            				System.out.print("\tcommentstart");
+            				//System.out.print("\tcommentstart");
             			}
-            			System.out.println("\tcomment");
+            			//System.out.println("\tcomment");
             		}
             		else if (line.matches(regEmp))
             		{
             			//isEmpLine=true;
             			empLines++;
-            			System.out.println("\tempty");
+            			//System.out.println("\tempty");
             		}
             		else
             		{
             			//isCodLine=true;
             			codeLines++;
-            			System.out.println("\tcode");
+            			//System.out.println("\tcode");
             		}
         		}
         		else  //如果当前正在多行注释当中,当前行必为注释行
         		{
         			comLines++;
-    				System.out.println("\tcomment");
+    				//System.out.println("\tcomment");
         			if(line.matches(regComEnd))   //如果匹配多行注释结束表达式，则将endCom=1,com=0
         			{
         				commentingNow=false;
@@ -360,36 +360,131 @@ public class WC
 	//主方法
 	public static void main(String[] args)
 	{
-		//递归地找到目录及子目录下所有符合条件的文件名
-		inputFile="file1.c";
-		stopList="stoplist.txt";
-		//ArrayList<String> fileFound=new ArrayList<String>();
-		//s(fileFound);
 		
+		//首先清空输出文件
 		
+		for(int i=0;i<args.length;i++)
+		{
+			//判断参数情况
+			switch(args[i])
+			{
+				case "-c" : needC=true;break;
+				case "-w" : needW=true;break;
+				case "-l" : needL=true;break;
+				case "-o" : needO=true;outputFile=args[i+1];break;
+				
+				case "-s" : needS=true;break;
+				case "-a" : needA=true;break;
+				case "-e" : needE=true;stopList=args[i+1];break;
+				
+				default :
+					if(!args[i-1].equals("-e")&&!args[i-1].equals("-o"))
+						{
+							
+							inputFile=args[i];
+						}
+			}
+			
+		}
+//		System.out.print("inputFile is:");
+//		System.out.println(inputFile);
+//		
+//		System.out.print("stopList is:");
+//		System.out.println(stopList);
+		//根据参数情况，生成输出结果字符串
+		String outputStr="";
+		ArrayList<String> fileNames =new ArrayList<String>();//要统计的文件名们
 		
-		//getBasicInfoWithSL(inputFile);
-		getBasicInfo(inputFile);
+		if(!needS)                  
+		{
+			fileNames.add(inputFile);
+		}
+		else
+		{
+			s(fileNames);
+		}
+		int len=fileNames.size();
+		String fn;
 		
+		for(int i=0;i<len;i++)   
+		{
+			fn=fileNames.get(i);    //对于每一个要统计的文件
+			//System.out.println(fn);
+			if(needC||needW||needL)    //统计基本信息
+			{
+				if(needE)
+					getBasicInfoWithSL(fn);
+				else getBasicInfo(fn);
+			}
 		
+			//写结果字符串
+			String fileShortName=fn.substring(fn.lastIndexOf("\\")+1, fn.length());
+			if(needC)
+			{
+				//file.c, 字符数: 50
+				outputStr+=fileShortName;
+				outputStr+=", 字符数: ";
+				outputStr+=chars;
+				outputStr+="\r\n";
+			}
+			if(needW)
+			{
+				//file1.c, 单词数: 30
+				outputStr+=fileShortName;
+				outputStr+=", 单词数: ";
+				outputStr+=words;
+				outputStr+="\r\n";
+			}
+			if(needL)
+			{
+				//file.c, 行数: 10
+				outputStr+=fileShortName;
+				outputStr+=", 行数: ";
+				outputStr+=lines;
+				outputStr+="\r\n";
+			}
+			if(needA)
+			{
+				getComInfo(fn);//统计复杂信息
+				//file1.c, 代码行/空行/注释行: 5/2/3
+				outputStr+=fileShortName;
+				outputStr+=", 代码行/空行/注释行: ";
+				outputStr+=codeLines;
+				outputStr+="/";
+				outputStr+=empLines;
+				outputStr+="/";
+				outputStr+=comLines;
+				outputStr+="\r\n";
+			}
+			
+		}
 		
-		getComInfo(inputFile);
-		//System.out.println(fileFound);
+		System.out.println(outputStr);
+		//写入文件
+		if(!needO)
+		{
+			outputFile="result.txt";
+		}
+		try 
+		{
+			
+	        File writename = new File(outputFile); // 如果没有则要建立一个新的output。txt文件  
+	        writename.createNewFile(); // 创建新文件  
+	        BufferedWriter out = new BufferedWriter(new FileWriter(writename));  
+	        out.write(outputStr); // \r\n即为换行  
+	        out.flush(); // 把缓存区内容压入文件  
+	        out.close(); // 最后记得关闭文件  
+			//System.out.println("already written the output.txt"); 
+		} 
+		catch (IOException e) 
+		{
+			e.printStackTrace();
+		}
+
 		
-//		inputFile="file1.c";
-//		getInfo();
-		System.out.print("lines: ");
-		System.out.println(lines);
-		System.out.print("characters: ");
-		System.out.println(chars);
-		System.out.print("words: ");
-		System.out.println(words);
-		System.out.print("empLines: ");
-		System.out.println(empLines);
-		System.out.print("comLines: ");
-		System.out.println(comLines);
-		System.out.print("codeLines: ");
-		System.out.println(codeLines);
+	
+
+
 		//---------------------------------------------------------------------------
 		
 		//---------------------------------------------------------------------------
