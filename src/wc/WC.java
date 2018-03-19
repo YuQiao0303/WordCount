@@ -290,13 +290,13 @@ public class WC
     	//boolean commentingNow=false;//之前出现过“/*”且尚未出现“*/”
     	int comFlag=0;  //每遇到一个“/*”则+1，每遇到一个“*/”则减一；为正说明正处于多行注释之中
     	
-    	String regCom = "(\\s*)(\\{|\\})?(\\s*)(//|/\\*)(.*)";     //单行注释行或多行注释起始行的正则表达式
-		String regEmp ="(\\s*)(\\{|\\})?(\\s*)";            //空行的正则表达式
-		String regComSingle = "(\\s*)(\\{|\\})?(\\s*)(/\\*).*(\\*/)(\\s*)";     //不可能是多行注释第一行的正则表达式
-		String regComBegin = "(\\s*)(\\{|\\})?(\\s*)(/\\*).*";     //可能是多行注释第一行的正则表达式
+    	String regCom = "(\\s*)(\\{|\\})?(\\s*)(//|/\\*)([\\s\\S]*)";     //单行注释行或多行注释起始行的正则表达式
+		String regEmp ="(\\s*)(\\{|\\}|;)?(\\s*)";            //空行的正则表达式
+		//String regComSingle = "(\\s*)(\\{|\\})?(\\s*)(/\\*)[\\s\\S]*(\\*/)(\\s*)";     //不可能是多行注释第一行的正则表达式
+		String regComBegin = "(\\s*)(\\{|\\})?(\\s*)(/\\*)[\\s\\S]*";     //可能是多行注释第一行的正则表达式
 		//String regComEnd=".*(\\*/)";    //多行注释结束
 		
-    	//说明：如果noStartComm为false，且MayStartCommons为true，则说明当前行是多行注释的第一行
+    	//说明：MayStartCommons为true，则说明当前行出现了/*
     	try 
 		{ // 防止文件建立或读取失败，用catch捕捉错误并打印，也可以throw  
     		File filename = new File(fileName); // 要读取该路径的文件  
@@ -308,64 +308,122 @@ public class WC
             while (line != null) 
             {  
             	
-//            	//_______________________打印该行行号和内容
-//            	System.out.print(lines);
-//            	System.out.print("	");
-//            	System.out.print(line);
+            	//_______________________打印该行行号和内容
+            	//System.out.print(lines);
+            	//System.out.print("	");
+            	System.out.print(line);
             	
         		//__________________判断本行类型：代码行、空行、注释行_____________________
         		
-        		if(comFlag==0)  //如果目前不在多行注释当中
+        		if(comFlag<=0)  //如果目前不在多行注释当中
         		{
         			if(line.matches(regCom))  //判断是不是注释行
             		{
-            			//isComLine=true;
-            			comLines++;
             			
+            			comLines++;
+            			System.out.print("	");
+                    	System.out.print("comment");
+                    	
             			//下面判断是不是多行注释的开始
-            			if(!line.matches(regComSingle)&&line.matches(regComBegin))
+            			//统计“/*”和“*/”的个数相应的改变comFlag的值
+            			String s=line;
+            			
+            			int i=0;
+            			
+            			while(i<s.length())
             			{
-            				//commentingNow=true;
-            				
-            				comFlag++;
-            				//System.out.print("\tcommentstart");
+            				if(s.indexOf("/*",i)==i)
+            				{
+            					comFlag++;
+            					
+            					i+=2;
+            				}
+            				else if(s.indexOf("*/",i)==i)
+            				{
+            					comFlag--;
+//            					System.out.print("i;m here");
+//            					System.out.print(s.indexOf("*/",i));
+//            					System.out.print(i);
+            					i+=2;
+            				}
+            				else i++;
+
             			}
-            			//System.out.println("\tcomment");
+            			System.out.println(comFlag);
+            			
             		}
             		else if (line.matches(regEmp))
             		{
             			//isEmpLine=true;
             			empLines++;
+            			System.out.print("	");
+                    	System.out.print("emp");
+                    	System.out.println(comFlag);
             			//System.out.println("\tempty");
             		}
             		else
             		{
             			//isCodLine=true;
             			codeLines++;
+            			System.out.print("	");
+                    	System.out.print("code");
+                    	System.out.println(comFlag);
             			//System.out.println("\tcode");
             		}
         		}
-        		else  //如果当前正在多行注释当中,当前行必为注释行
+        		else  //如果当前正在多行注释当中
         		{
-        			comLines++;
+        			//判断是否含有该多行注释结束的“*/”
     				//System.out.println("\tcomment");
-//        			if(line.matches(regComEnd))   //如果匹配多行注释结束表达式，则将endCom=1,com=0
-//        			{
-//        				commentingNow=false;
-//        				
-//        			}
+
         			//统计“/*”和“*/”的个数相应的改变comFlag的值
         			//int countLeft=0,countRight=0;
         			String s=line;
-        			while(s.indexOf("/*")>0)
+        			int i=0;
+        			i=0;
+        			while(i<s.length())
         			{
-        				comFlag++;
-        				s=s.replace("/*",""); //将统计过的abc替换为空 然后继续循环
+        				if(s.indexOf("/*",i)==i)
+        				{
+        					comFlag++;
+        					i+=2;
+        				}
+        				else if(s.indexOf("*/",i)==i)
+        				{
+        					comFlag--;
+        					i+=2;
+        				}
+        				else i++;
+
         			}
-        			while(s.indexOf("*/")>0)
+        			
+        			if(comFlag<=0) //如果出现了多行注释结束的 “*/”
         			{
-        				comFlag--;
-        				s=s.replace("*/",""); //将统计过的abc替换为空 然后继续循环
+        				String sub=line.substring(line.lastIndexOf("*/")+2);
+        				
+        				if(sub.matches(regEmp)) //如果*/后面的子串，符合空行特征，则改整行为注释行
+        					{
+        							comLines++;
+//        							System.out.print("	");
+//        	                    	System.out.print("comment   ");
+//        	                    	System.out.print(sub);
+//        	                    	System.out.println(comFlag);
+        					}
+        				else 
+        				{
+        					codeLines++;   
+        					System.out.print("	");
+                        	System.out.print("code   ");
+                        	System.out.print(sub);
+                        	System.out.println(comFlag);
+        				}   
+        			}
+        			else //不是多行注释的结束，则一定为注释行
+        			{
+        				comLines++;
+						System.out.print("	");
+                    	System.out.print("comment");
+                    	System.out.println(comFlag);
         			}
         		}
             	//-----------------------------------------------------------------
