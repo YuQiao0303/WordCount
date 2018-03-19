@@ -83,9 +83,13 @@ public class WC
 		
 
 		
-		//如果 *.c 前面还有相对路径或绝对路径
-		if(inputFile.indexOf('/')>-1||inputFile.indexOf('\\')>-1)
-			path=inputFile.substring(0,inputFile.lastIndexOf("*")-1);
+		//如果 *.c 前面还有带有\的路径
+		if(inputFile.indexOf('\\')>-1)
+			{
+				System.out.println(inputFile);
+				path=inputFile.substring(0,inputFile.lastIndexOf('\\'));
+			}
+
 		//如果参数是   *.c
 		else path=".";
 			
