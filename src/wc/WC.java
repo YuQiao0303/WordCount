@@ -123,6 +123,7 @@ public class WC
             	//——————————————————————统计行数和字符数__________
             	chars+=line.length();
             	lines++;
+            	
             	//_______________________打印该行行号和内容
 //            	System.out.print(lines);
 //            	System.out.print("	");
@@ -149,6 +150,7 @@ public class WC
             	//-----------------------------------------------------------------
                 line = br.readLine(); // 读取下一行数据  
             } 
+            chars+=lines-1;    //由于换行符也算做字符，故如此
             br.close();
 		}
     	
@@ -261,6 +263,7 @@ public class WC
             	//-----------------------------------------------------------------
                 line = br.readLine(); // 读取下一行数据  
             } 
+            chars+=lines-1;    //由于换行符也算做字符，故如此
             br.close();
 		}
     	
@@ -278,13 +281,14 @@ public class WC
     	empLines=0;
     	comLines=0;
     	
-    	boolean commentingNow=false;//之前出现过“/*”且尚未出现“*/”
+    	//boolean commentingNow=false;//之前出现过“/*”且尚未出现“*/”
+    	int comFlag=0;  //每遇到一个“/*”则+1，每遇到一个“*/”则减一；为正说明正处于多行注释之中
     	
-    	String regCom = "(\\s*)(\\{|\\})?(\\s*)(//|/\\*)(.*)";     //注释行的正则表达式
+    	String regCom = "(\\s*)(\\{|\\})?(\\s*)(//|/\\*)(.*)";     //单行注释行或多行注释起始行的正则表达式
 		String regEmp ="(\\s*)(\\{|\\})?(\\s*)";            //空行的正则表达式
 		String regComSingle = "(\\s*)(\\{|\\})?(\\s*)(/\\*).*(\\*/)(\\s*)";     //不可能是多行注释第一行的正则表达式
 		String regComBegin = "(\\s*)(\\{|\\})?(\\s*)(/\\*).*";     //可能是多行注释第一行的正则表达式
-		String regComEnd=".*(\\*/)";    //多行注释结束
+		//String regComEnd=".*(\\*/)";    //多行注释结束
 		
     	//说明：如果noStartComm为false，且MayStartCommons为true，则说明当前行是多行注释的第一行
     	try 
@@ -305,7 +309,7 @@ public class WC
             	
         		//__________________判断本行类型：代码行、空行、注释行_____________________
         		
-        		if(commentingNow==false)  //如果目前不在多行注释当中
+        		if(comFlag==0)  //如果目前不在多行注释当中
         		{
         			if(line.matches(regCom))  //判断是不是注释行
             		{
@@ -315,8 +319,9 @@ public class WC
             			//下面判断是不是多行注释的开始
             			if(!line.matches(regComSingle)&&line.matches(regComBegin))
             			{
-            				commentingNow=true;
+            				//commentingNow=true;
             				
+            				comFlag++;
             				//System.out.print("\tcommentstart");
             			}
             			//System.out.println("\tcomment");
@@ -338,10 +343,23 @@ public class WC
         		{
         			comLines++;
     				//System.out.println("\tcomment");
-        			if(line.matches(regComEnd))   //如果匹配多行注释结束表达式，则将endCom=1,com=0
+//        			if(line.matches(regComEnd))   //如果匹配多行注释结束表达式，则将endCom=1,com=0
+//        			{
+//        				commentingNow=false;
+//        				
+//        			}
+        			//统计“/*”和“*/”的个数相应的改变comFlag的值
+        			//int countLeft=0,countRight=0;
+        			String s=line;
+        			while(s.indexOf("/*")>0)
         			{
-        				commentingNow=false;
-        				
+        				comFlag++;
+        				s=s.replace("/*",""); //将统计过的abc替换为空 然后继续循环
+        			}
+        			while(s.indexOf("*/")>0)
+        			{
+        				comFlag--;
+        				s=s.replace("*/",""); //将统计过的abc替换为空 然后继续循环
         			}
         		}
             	//-----------------------------------------------------------------
