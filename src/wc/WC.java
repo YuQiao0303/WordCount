@@ -10,7 +10,7 @@ import java.io.BufferedWriter;
 import java.io.FileInputStream;  
 import java.io.FileWriter; 
 import java.io.IOException;
-import java.util.List;
+
 
 public class WC 
 {
@@ -58,6 +58,7 @@ public class WC
 	        File [] subfiles = file.listFiles(); 
 	        if(subfiles != null) 
 	        fileName.addAll(Arrays.asList(subfiles)); 
+	        //System.out.println(path);
 	        for(File a:files) 
 	        { 
 	            if(a.isDirectory()) 
@@ -80,14 +81,16 @@ public class WC
 		ArrayList<File> listFileName = new ArrayList<File>();  
 		//System.out.println(inputFile);//**************
 		
-		//如果是绝对路径
-		if (inputFile.matches("[A-Z]:[\\s\\S]*\\*\\.[\\s\\S]*"))
-		{
+
+		
+		//如果 *.c 前面还有相对路径或绝对路径
+		if(inputFile.indexOf('/')>-1||inputFile.indexOf('\\')>-1)
 			path=inputFile.substring(0,inputFile.lastIndexOf("*")-1);
-			
-		}
-		//如果是相对路径
+		//如果参数是   *.c
 		else path=".";
+			
+			
+		
 		
         getAllFileName(path,listFileName); 
         String fnStr;
@@ -311,7 +314,7 @@ public class WC
             	//_______________________打印该行行号和内容
             	//System.out.print(lines);
             	//System.out.print("	");
-            	System.out.print(line);
+            	//System.out.print(line);
             	
         		//__________________判断本行类型：代码行、空行、注释行_____________________
         		
@@ -321,8 +324,8 @@ public class WC
             		{
             			
             			comLines++;
-            			System.out.print("	");
-                    	System.out.print("comment");
+            			//System.out.print("	");
+                    	//System.out.print("comment");
                     	
             			//下面判断是不是多行注释的开始
             			//统计“/*”和“*/”的个数相应的改变comFlag的值
@@ -349,25 +352,25 @@ public class WC
             				else i++;
 
             			}
-            			System.out.println(comFlag);
+            			//System.out.println(comFlag);
             			
             		}
             		else if (line.matches(regEmp))
             		{
             			//isEmpLine=true;
             			empLines++;
-            			System.out.print("	");
-                    	System.out.print("emp");
-                    	System.out.println(comFlag);
+            			//System.out.print("	");
+                    	//System.out.print("emp");
+                    	//System.out.println(comFlag);
             			//System.out.println("\tempty");
             		}
             		else
             		{
             			//isCodLine=true;
             			codeLines++;
-            			System.out.print("	");
-                    	System.out.print("code");
-                    	System.out.println(comFlag);
+            			//System.out.print("	");
+                    	//System.out.print("code");
+                    	//System.out.println(comFlag);
             			//System.out.println("\tcode");
             		}
         		}
@@ -412,18 +415,18 @@ public class WC
         				else 
         				{
         					codeLines++;   
-        					System.out.print("	");
-                        	System.out.print("code   ");
-                        	System.out.print(sub);
-                        	System.out.println(comFlag);
+        					//System.out.print("	");
+                        	//System.out.print("code   ");
+                        	//System.out.print(sub);
+                        	//System.out.println(comFlag);
         				}   
         			}
         			else //不是多行注释的结束，则一定为注释行
         			{
         				comLines++;
-						System.out.print("	");
-                    	System.out.print("comment");
-                    	System.out.println(comFlag);
+						//System.out.print("	");
+                    	//System.out.print("comment");
+                    	//System.out.println(comFlag);
         			}
         		}
             	//-----------------------------------------------------------------
