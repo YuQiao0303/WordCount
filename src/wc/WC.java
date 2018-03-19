@@ -81,12 +81,10 @@ public class WC
 		ArrayList<File> listFileName = new ArrayList<File>();  
 		//System.out.println(inputFile);//**************
 		
-
-		
 		//如果 *.c 前面还有带有\的路径
 		if(inputFile.indexOf('\\')>-1)
 			{
-				System.out.println(inputFile);
+				//System.out.println(inputFile);
 				path=inputFile.substring(0,inputFile.lastIndexOf('\\'));
 			}
 
@@ -189,7 +187,7 @@ public class WC
             String line ;  
             line = br.readLine();  
             
-            String reg1 = "\\s+";                       
+            String reg1 = " +";                       
             while (line != null) 
             {  
             	//将读取的行分割成各个单词 
@@ -300,7 +298,7 @@ public class WC
     	String regCom = "(\\s*)(\\{|\\})?(\\s*)(//|/\\*)([\\s\\S]*)";     //单行注释行或多行注释起始行的正则表达式
 		String regEmp ="(\\s*)(\\{|\\}|;)?(\\s*)";            //空行的正则表达式
 		//String regComSingle = "(\\s*)(\\{|\\})?(\\s*)(/\\*)[\\s\\S]*(\\*/)(\\s*)";     //不可能是多行注释第一行的正则表达式
-		String regComBegin = "(\\s*)(\\{|\\})?(\\s*)(/\\*)[\\s\\S]*";     //可能是多行注释第一行的正则表达式
+		//String regComBegin = "(\\s*)(\\{|\\})?(\\s*)(/\\*)[\\s\\S]*";     //可能是多行注释第一行的正则表达式
 		//String regComEnd=".*(\\*/)";    //多行注释结束
 		
     	//说明：MayStartCommons为true，则说明当前行出现了/*
