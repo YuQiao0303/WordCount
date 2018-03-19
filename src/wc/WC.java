@@ -10,6 +10,7 @@ import java.io.BufferedWriter;
 import java.io.FileInputStream;  
 import java.io.FileWriter; 
 import java.io.IOException;
+import java.util.List;
 
 public class WC 
 {
@@ -77,11 +78,16 @@ public class WC
 		String type=inputFile.substring((inputFile.lastIndexOf(".") + 1), inputFile.length()).toLowerCase();
 		String fileType;
 		ArrayList<File> listFileName = new ArrayList<File>();  
-		if (inputFile.charAt(0)=='*')
+		//System.out.println(inputFile);//**************
+		
+		//如果是绝对路径
+		if (inputFile.matches("[A-Z]:[\\s\\S]*\\*\\.[\\s\\S]*"))
 		{
-			path=".";
+			path=inputFile.substring(0,inputFile.lastIndexOf("*")-1);
+			
 		}
-		else path=inputFile.substring(0,inputFile.lastIndexOf("*")-1);
+		//如果是相对路径
+		else path=".";
 		
         getAllFileName(path,listFileName); 
         String fnStr;
@@ -379,10 +385,12 @@ public class WC
 	public static void main(String[] args)
 	{
 		
-		//首先清空输出文件
+		//
+		inputFile="";
 		
 		for(int i=0;i<args.length;i++)
 		{
+			//System.out.println(args[i]);
 			//判断参数情况
 			switch(args[i])
 			{
@@ -428,39 +436,45 @@ public class WC
 		{
 			fn=fileNames.get(i);    //对于每一个要统计的文件
 			//System.out.println(fn);
-			if(needC||needW||needL)    //统计基本信息
+			String fileShortName=fn.substring(fn.lastIndexOf("\\")+1, fn.length());
+			
+			 //基本信息
+			if(needC||needW||needL)    
 			{
+				//统计基本信息
 				if(needE)
 					getBasicInfoWithSL(fn);
 				else getBasicInfo(fn);
+				
+				//将基本信息写结果字符串
+				
+				if(needC)
+				{
+					//file.c, 字符数: 50
+					outputStr+=fileShortName;
+					outputStr+=", 字符数: ";
+					outputStr+=chars;
+					outputStr+="\r\n";
+				}
+				if(needW)
+				{
+					//file1.c, 单词数: 30
+					outputStr+=fileShortName;
+					outputStr+=", 单词数: ";
+					outputStr+=words;
+					outputStr+="\r\n";
+				}
+				if(needL)
+				{
+					//file.c, 行数: 10
+					outputStr+=fileShortName;
+					outputStr+=", 行数: ";
+					outputStr+=lines;
+					outputStr+="\r\n";
+				}
 			}
 		
-			//写结果字符串
-			String fileShortName=fn.substring(fn.lastIndexOf("\\")+1, fn.length());
-			if(needC)
-			{
-				//file.c, 字符数: 50
-				outputStr+=fileShortName;
-				outputStr+=", 字符数: ";
-				outputStr+=chars;
-				outputStr+="\r\n";
-			}
-			if(needW)
-			{
-				//file1.c, 单词数: 30
-				outputStr+=fileShortName;
-				outputStr+=", 单词数: ";
-				outputStr+=words;
-				outputStr+="\r\n";
-			}
-			if(needL)
-			{
-				//file.c, 行数: 10
-				outputStr+=fileShortName;
-				outputStr+=", 行数: ";
-				outputStr+=lines;
-				outputStr+="\r\n";
-			}
+			
 			if(needA)
 			{
 				getComInfo(fn);//统计复杂信息
