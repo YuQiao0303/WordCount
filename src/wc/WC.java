@@ -15,26 +15,25 @@ import java.io.IOException;
 public class WC 
 {
 	//________________________________attributes________________________________
-	public static String inputFile;    //用户输入的文件路径
-	public static String outputFile;   //输出信息的文件名
-	public static String stopList;     //
-
+	public static String inputFile;		//用户输入的文件路径
+	public static String outputFile;	//输出信息的文件名
+	public static String stopList;		//
 	
-	public static int chars;
-	public static int words;
-	public static int lines;
-	public static int codeLines;
-	public static int empLines;
-	public static int comLines;
+	public static int chars;			//字符数
+	public static int words;   			//单词数
+	public static int lines;			//行数
+	public static int codeLines;		//代码行数
+	public static int empLines;			//空行数
+	public static int comLines;			//注释行数
 
-	public static boolean needC;
-	public static boolean needW;
-	public static boolean needL;
-	public static boolean needO;
+	public static boolean needC;		//输入参数中是否有“-c”
+	public static boolean needW;		//输入参数中是否有“-w”
+	public static boolean needL;		//输入参数中是否有“-l”
+	public static boolean needO;		//输入参数中是否有“-o”
 
-	public static boolean needS;
-	public static boolean needA;
-	public static boolean needE;
+	public static boolean needS;		//输入参数中是否有“-s”
+	public static boolean needA;		//输入参数中是否有“-a”
+	public static boolean needE;		//输入参数中是否有“-e”
 	//___________________________________methods_________________________________
 	
 
@@ -195,7 +194,7 @@ public class WC
             	
             	for(int i=0;i<str.length;i++)
             	{
-            		wordsIgnored.add(str[i]);  //将停用词表中的单词让入数组wordsIgnored
+            		wordsIgnored.add(str[i]);  //将停用词表中的单词放入数组wordsIgnored
             	}
                 line = br.readLine(); // 一次读入一行数据
             } 
@@ -291,15 +290,10 @@ public class WC
     	codeLines=0;
     	empLines=0;
     	comLines=0;
-    	
-    	//boolean commentingNow=false;//之前出现过“/*”且尚未出现“*/”
     	int comFlag=0;  //每遇到一个“/*”则+1，每遇到一个“*/”则减一；为正说明正处于多行注释之中
-    	
-    	String regCom = "(\\s*)(\\{|\\})?(\\s*)(//|/\\*)([\\s\\S]*)";     //单行注释行或多行注释起始行的正则表达式
+    	String regCom = "(\\s*)(\\{|\\})?(\\s*)(//)([\\s\\S]*)";     //单行注释行
+    	String regCom2 = "(\\s*)(\\{|\\})?(\\s*)(/\\*)([\\s\\S]*)";  //可能是多行注释起始行的正则表达式
 		String regEmp ="(\\s*)(\\{|\\}|;)?(\\s*)";            //空行的正则表达式
-		//String regComSingle = "(\\s*)(\\{|\\})?(\\s*)(/\\*)[\\s\\S]*(\\*/)(\\s*)";     //不可能是多行注释第一行的正则表达式
-		//String regComBegin = "(\\s*)(\\{|\\})?(\\s*)(/\\*)[\\s\\S]*";     //可能是多行注释第一行的正则表达式
-		//String regComEnd=".*(\\*/)";    //多行注释结束
 		
     	//说明：MayStartCommons为true，则说明当前行出现了/*
     	try 
@@ -322,19 +316,18 @@ public class WC
         		
         		if(comFlag<=0)  //如果目前不在多行注释当中
         		{
-        			if(line.matches(regCom))  //判断是不是注释行
+        			if(line.matches(regCom))  //判断是不是单行注释行
+        				comLines++;
+        			else if(line.matches(regCom2))  //判断是否可能是多行注释的起始行
             		{
             			
-            			comLines++;
             			//System.out.print("	");
                     	//System.out.print("comment");
                     	
             			//下面判断是不是多行注释的开始
             			//统计“/*”和“*/”的个数相应的改变comFlag的值
-            			String s=line;
-            			
-            			int i=0;
-            			
+            			String s=line;            			
+            			int i=0;            			
             			while(i<s.length())
             			{
             				if(s.indexOf("/*",i)==i)
@@ -355,6 +348,15 @@ public class WC
 
             			}
             			//System.out.println(comFlag);
+            			if(comFlag==0&&!(s.substring(s.lastIndexOf("*/")+2)).matches(regEmp))
+            				{
+            					codeLines++;
+            					//System.out.print(s);
+            					//System.out.print((s.substring(s.lastIndexOf("*/"))));
+            					//System.out.println("here");
+            				
+            				}
+            			else comLines++;
             			
             		}
             		else if (line.matches(regEmp))
@@ -450,7 +452,6 @@ public class WC
 		
 		//
 		inputFile="";
-		
 		for(int i=0;i<args.length;i++)
 		{
 			//System.out.println(args[i]);
