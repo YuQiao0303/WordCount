@@ -1,2 +1,3 @@
-code main
+code main()
   hello hi
+is

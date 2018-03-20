@@ -1,3 +1,1 @@
-input1.c, 字符数: 149
-input1.c, 单词数: 27
-input1.c, 行数: 19
+input1.c, 单词数: 23
