@@ -1,2 +1,7 @@
-hellow woraldf   agaa,aewt fdsteg
-¹þ¹þ¹þÎÖ¶û°¢Ë¹µÙ·Ò
+/*
+/*/*asdf /*gawef
+sdf*/ grg
+awef*/*/
+gawef*/ ga
+agegfdff
+   }
